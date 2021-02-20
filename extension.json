@@ -1,0 +1,39 @@
+{
+  "name": "OpenGraph",
+  "version": "1.0.0",
+  "author": [
+    "harugon"
+  ],
+  "url": "https://github.com/harugon/OpenGraph",
+  "descriptionmsg": "opengraph-desc",
+  "license-name": "MIT",
+  "type": "other",
+  "requires": {
+    "MediaWiki": ">= 1.34.0"
+  },
+  "MessagesDirs": {
+    "OpenGraph": [
+      "i18n"
+    ]
+  },
+  "AutoloadClasses": {
+    "OpenGraph\\Hooks": "includes/Hooks.php"
+  },
+  "Hooks": {
+    "BeforePageDisplay": "OpenGraph\\Hooks::onBeforePageDisplay"
+  },
+  "ConfigRegistry": {
+    "opengraph": "GlobalVarConfig::newInstance"
+  },
+  "config": {
+    "OpenGraphFallbackImage": {
+      "value": "",
+      "description": "Fallback Image URL"
+    },
+    "OpenGraphTwitterSite": {
+      "value": "",
+      "description": "Twitter Site Account"
+    }
+  },
+  "manifest_version": 2
+}
