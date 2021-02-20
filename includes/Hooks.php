@@ -60,8 +60,12 @@ class Hooks {
         ];
 		$twitter = [
             "twitter:card"=>"summary",//“summary”、“summary_large_image”
-            "twitter:site"=>$TwitterSite,//カードフッターで使用されるウェブサイトの@ユーザー名。
         ];
+
+		if(!($TwitterSite === "")){
+		    //カードフッターで使用されるウェブサイトの@ユーザー名。
+            $twitter['twitter:site'] = $TwitterSite;
+        }
 
 		//PageImageでセットされてるか
         if(!$out->hasHeadItem('og:image')){
