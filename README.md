@@ -1,4 +1,5 @@
 # OpenGraph
+![MediawikiにOpenGraph](https://github.com/harugon/OpenGraph/blob/main/.gituhb/screenshot/opengraph.png?raw=true "OpenGraph")
 MediawikiにOpenGraph,twitterカードを追加します
 
 ## 依存する拡張
