@@ -25,6 +25,7 @@ class Hooks {
 	public static function onBeforePageDisplay( OutputPage &$out, Skin &$skin ) {
         global $wgSitename;
 
+        //https://www.mediawiki.org/wiki/Manual:Configuration_for_developers
         $config = MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'opengraph' );
         $FallbackImage = $config->get( 'OpenGraphFallbackImage' );//フォールバック画像
         $TwitterSite = $config->get( 'OpenGraphTwitterSite' ); //Twitterアカウント

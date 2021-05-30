@@ -18,8 +18,8 @@ wfLoadExtension( 'OpenGraph' );
 ## 設定
 
 ```php
- $OpenGraphFallbackImage = "";//フォールバック画像
- $OpenGraphTwitterSite = "@wiki";//Twitterアカウント
+ $wgOpenGraphFallbackImage = "";//フォールバック画像
+ $wgOpenGraphTwitterSite = "@wiki";//Twitterアカウント
 ```
 
 ## link
