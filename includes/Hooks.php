@@ -14,30 +14,31 @@ use Skin;
 
 class Hooks {
 
-	/**
-	 * onBeforePageDisplay
-	 *
-	 * @param OutputPage $out
-	 * @param Skin $skin
-	 * @throws MWException
-	 */
-	public static function onBeforePageDisplay( OutputPage $out, Skin $skin ) {
+    /**
+     * onBeforePageDisplay
+     *
+     * @param OutputPage $out
+     * @param Skin $skin
+     * @return bool
+     * @throws MWException
+     */
+	public static function onBeforePageDisplay( OutputPage &$out, Skin &$skin ) {
         global $wgSitename;
 
         $config = MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'opengraph' );
-        $image = $config->get( 'OpenGraphFallbackImage' );//フォールバック画像
+        $FallbackImage = $config->get( 'OpenGraphFallbackImage' );//フォールバック画像
         $TwitterSite = $config->get( 'OpenGraphTwitterSite' ); //Twitterアカウント
 
 
         //view以外表示させない
         $action = Action::getActionName($out->getContext());
-        if (!($action === 'view')){
+        if ($action !== 'view'){
             return true;
         }
 
         //標準名前空間以外表示させない
         $namespace = $out->getTitle()->getNamespace();
-        if(!($namespace === 0)){
+        if($namespace !== 0){
             return true;
         }
 
@@ -50,7 +51,7 @@ class Hooks {
 
 
         //https://developer.twitter.com/ja/docs/tweets/optimize-with-cards/guides/getting-started
-		$ogp=[
+		$ogp = [
 		    "og:site_name" =>$site_name,
             "og:title"=>$title,
             "og:type"=>"article",
@@ -58,19 +59,21 @@ class Hooks {
             "og:description"=>$description,
             //"og:locale"=>"ja_JP",
         ];
+
 		$twitter = [
             "twitter:card"=>"summary",//“summary”、“summary_large_image”
         ];
 
-		if(!($TwitterSite === "")){
+		if($TwitterSite !== ""){
 		    //カードフッターで使用されるウェブサイトの@ユーザー名。
             $twitter['twitter:site'] = $TwitterSite;
         }
 
-		//PageImageでセットされてるか
+
         if(!$out->hasHeadItem('og:image')){
-            if(!($image === "")){
-                $ogp['og:image']= $image;
+            //PageImageでセットされていない
+            if($FallbackImage !== ""){
+                $ogp['og:image'] = $FallbackImage;
             }
         }
 
@@ -78,15 +81,24 @@ class Hooks {
         foreach ($ogp as $property => $value) {
             $out->addHeadItem($property,Html::element( 'meta', ['property' => $property, 'content' => $value ] ));
         }
+
         //Twitter
         foreach ($twitter as $property => $value) {
             $out->addMeta($property,$value);
         }
+
         return true;
 	}
 
-
-	private static function getPageExtracts(int $page_id){
+    /**
+     * ページのコンテンツを抽出
+     *
+     * @url https://www.mediawiki.org/wiki/Extension:TextExtracts/ja
+     * @param int $page_id
+     * @return string
+     * @throws MWException
+     */
+	private static function getPageExtracts(int $page_id):string{
         $request = [
             'action' => 'query',
             'prop' => 'extracts',
@@ -100,9 +112,7 @@ class Hooks {
         //API実行
         $api->execute();
         $data = $api->getResult()->getResultData(['query','pages']);
-        return $data[$page_id]['extract']['*']??"";
+        return $data[$page_id]['extract']['*'] ?? "";
     }
-
-
 
 }
