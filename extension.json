@@ -33,6 +33,10 @@
     "OpenGraphTwitterSite": {
       "value": "",
       "description": "Twitter Site Account"
+    },
+    "OpenGraphFbAppId": {
+      "value": "",
+      "description": "Facebook fb:app_id"
     }
   },
   "manifest_version": 2

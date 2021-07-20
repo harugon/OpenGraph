@@ -29,6 +29,7 @@ class Hooks {
         $config = MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'opengraph' );
         $FallbackImage = $config->get( 'OpenGraphFallbackImage' );//フォールバック画像
         $TwitterSite = $config->get( 'OpenGraphTwitterSite' ); //Twitterアカウント
+        $FbAppId = $config->get( 'OpenGraphFbAppId' ); //fb:app_id
 
 
         //view以外表示させない
@@ -51,39 +52,46 @@ class Hooks {
         $description = self::getPageExtracts($page_id);
 
 
-        //https://developer.twitter.com/ja/docs/tweets/optimize-with-cards/guides/getting-started
+        //OGP
 		$ogp = [
-		    "og:site_name" =>$site_name,
-            "og:title"=>$title,
-            "og:type"=>"article",
-            "og:url"=>$url,
-            "og:description"=>$description,
-            //"og:locale"=>"ja_JP",
+		    'og:site_name' =>$site_name,
+            'og:title'=>$title,
+            'og:type'=>'article',
+            'og:url'=>$url,
+            'og:description'=>$description,
         ];
 
+
+		//Facebook
+		if ($FbAppId !== ''){
+		    $ogp['fb:app_id'] = $FbAppId;
+        }
+
+		//Twitter
 		$twitter = [
-            "twitter:card"=>"summary",//“summary”、“summary_large_image”
+            'twitter:card'=>'summary',//“summary”、“summary_large_image”
         ];
 
-		if($TwitterSite !== ""){
+		if($TwitterSite !== ''){
 		    //カードフッターで使用されるウェブサイトの@ユーザー名。
             $twitter['twitter:site'] = $TwitterSite;
         }
 
 
+		//Image
         if(!$out->hasHeadItem('og:image')){
             //PageImageでセットされていない
-            if($FallbackImage !== ""){
+            if($FallbackImage !== ''){
                 $ogp['og:image'] = $FallbackImage;
             }
         }
 
-        //OpenGraph
+        //Add OpenGraph
         foreach ($ogp as $property => $value) {
             $out->addHeadItem($property,Html::element( 'meta', ['property' => $property, 'content' => $value ] ));
         }
 
-        //Twitter
+        //Add Twitter
         foreach ($twitter as $property => $value) {
             $out->addMeta($property,$value);
         }
@@ -113,7 +121,7 @@ class Hooks {
         //API実行
         $api->execute();
         $data = $api->getResult()->getResultData(['query','pages']);
-        return $data[$page_id]['extract']['*'] ?? "";
+        return $data[$page_id]['extract']['*'] ?? '';
     }
 
 }
