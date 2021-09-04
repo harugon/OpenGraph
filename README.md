@@ -11,6 +11,12 @@ MediawikiにOpenGraph,twitterカードを追加します
 
 ## インストール
 
+Composer でインストールします [composer.local.json](https://www.mediawiki.org/wiki/Composer#Using_composer-merge-plugin)
+```bash
+COMPOSER=composer.local.json composer require harugon/open-graph
+```
+
+LocalSettings.php に下記を追記
 ```php
 wfLoadExtension( 'OpenGraph' );
 ```
