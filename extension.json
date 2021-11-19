@@ -26,10 +26,6 @@
     "opengraph": "GlobalVarConfig::newInstance"
   },
   "config": {
-    "OpenGraphFallbackImage": {
-      "value": "",
-      "description": "Fallback Image URL"
-    },
     "OpenGraphTwitterSite": {
       "value": "",
       "description": "Twitter Site Account"

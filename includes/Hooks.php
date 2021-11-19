@@ -77,15 +77,6 @@ class Hooks {
             $twitter['twitter:site'] = $TwitterSite;
         }
 
-
-		//Image
-        if(!$out->hasHeadItem('og:image')){
-            //PageImageでセットされていない
-            if($FallbackImage !== ''){
-                $ogp['og:image'] = $FallbackImage;
-            }
-        }
-
         //Add OpenGraph
         foreach ($ogp as $property => $value) {
             $out->addHeadItem($property,Html::element( 'meta', ['property' => $property, 'content' => $value ] ));
