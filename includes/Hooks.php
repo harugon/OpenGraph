@@ -27,7 +27,6 @@ class Hooks {
 
         //https://www.mediawiki.org/wiki/Manual:Configuration_for_developers
         $config = MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'opengraph' );
-        $FallbackImage = $config->get( 'OpenGraphFallbackImage' );//フォールバック画像
         $TwitterSite = $config->get( 'OpenGraphTwitterSite' ); //Twitterアカウント
         $FbAppId = $config->get( 'OpenGraphFbAppId' ); //fb:app_id
 
