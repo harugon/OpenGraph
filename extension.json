@@ -1,6 +1,6 @@
 {
   "name": "OpenGraph",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": [
     "harugon"
   ],
@@ -17,10 +17,10 @@
     ]
   },
   "AutoloadClasses": {
-    "OpenGraph\\Hooks": "includes/Hooks.php"
+    "MediaWiki\\Extension\\OpenGraph\\Hooks": "includes/Hooks.php"
   },
   "Hooks": {
-    "BeforePageDisplay": "OpenGraph\\Hooks::onBeforePageDisplay"
+    "BeforePageDisplay": "MediaWiki\\Extension\\OpenGraph\\Hooks::onBeforePageDisplay"
   },
   "ConfigRegistry": {
     "opengraph": "GlobalVarConfig::newInstance"
