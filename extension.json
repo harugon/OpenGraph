@@ -45,6 +45,9 @@
     "OpenGraphTw": {
       "value": true,
       "description": "TwitterCard "
+    },
+    "OpenGraphNamespaces":{
+      "value": [0]
     }
   },
   "manifest_version": 2

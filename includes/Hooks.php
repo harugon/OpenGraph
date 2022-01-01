@@ -1,10 +1,9 @@
 <?php
 
-namespace OpenGraph;
+namespace MediaWiki\Extension\OpenGraph;
 
 use Action;
 use ApiMain;
-use ApiResult;
 use FauxRequest;
 use Html;
 use MediaWiki\MediaWikiServices;
@@ -23,12 +22,14 @@ class Hooks {
      * @throws MWException
      */
 	public static function onBeforePageDisplay( OutputPage &$out, Skin &$skin ) {
-        global $wgSitename;
 
-        //https://www.mediawiki.org/wiki/Manual:Configuration_for_developers
-        $config = MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'opengraph' );
-        $TwitterSite = $config->get( 'OpenGraphTwitterSite' ); //Twitterアカウント
-        $FbAppId = $config->get( 'OpenGraphFbAppId' ); //fb:app_id
+        $conf = MediaWikiServices::getInstance()->getMainConfig();
+        $Sitename = $conf->get( 'Sitename' );
+        $TwitterSite = $conf->get( 'OpenGraphTwitterSite' ); //Twitterアカウント
+        $FbAppId = $conf->get( 'OpenGraphFbAppId' ); //fb:app_id
+        $OnTw = $conf->get( 'OpenGraphTw' ); //
+        $OnFb = $conf->get( 'OpenGraphFb' ); //
+        $Namespaces = $conf->get( 'OpenGraphNamespaces' ); //
 
 
         //view以外表示させない
@@ -37,55 +38,56 @@ class Hooks {
             return true;
         }
 
-        //標準名前空間以外表示させない
-        $namespace = $out->getTitle()->getNamespace();
-        if($namespace !== 0){
+        if(!$out->getTitle()->inNamespaces($Namespaces)){
             return true;
         }
 
-		$site_name = $wgSitename;
+		$site_name = $Sitename;
 		$page = $out->getTitle();
 		$url = $page->getFullURL();
 		$title = $page->getText();
         $page_id  = $page->getArticleID();
         $description = self::getPageExtracts($page_id);
 
+        if($OnFb){
+            //Add OpenGraph
+            $ogp = [
+                'og:site_name' =>$site_name,
+                'og:title'=>$title,
+                'og:type'=>'article',
+                'og:url'=>$url,
+                'og:description'=>$description,
+            ];
 
-        //OGP
-		$ogp = [
-		    'og:site_name' =>$site_name,
-            'og:title'=>$title,
-            'og:type'=>'article',
-            'og:url'=>$url,
-            'og:description'=>$description,
-        ];
+            if ($FbAppId !== ''){
+                $ogp['fb:app_id'] = $FbAppId;
+            }
 
-
-		//Facebook
-		if ($FbAppId !== ''){
-		    $ogp['fb:app_id'] = $FbAppId;
+            foreach ($ogp as $property => $value) {
+                $out->addHeadItem($property,Html::element( 'meta', ['property' => $property, 'content' => $value ] ));
+            }
         }
 
-		//Twitter
-		$twitter = [
-            'twitter:card'=>'summary',//“summary”、“summary_large_image”
-        ];
+        if($OnTw){
+            //Add Twitter
+            $twitter = [
+                'twitter:card'=>'summary',//“summary”、“summary_large_image”
+            ];
+            if(!$OnFb){
+                $twitter+= [
+                    'twitter:title'=>$title,
+                    'twitter:description'=>$description,
+                ];
+            }
 
-		if($TwitterSite !== ''){
-		    //カードフッターで使用されるウェブサイトの@ユーザー名。
-            $twitter['twitter:site'] = $TwitterSite;
+            if($TwitterSite !== ''){
+                //カードフッターで使用されるウェブサイトの@ユーザー名。
+                $twitter['twitter:site'] = $TwitterSite;
+            }
+            foreach ($twitter as $property => $value) {
+                $out->addMeta($property,$value);
+            }
         }
-
-        //Add OpenGraph
-        foreach ($ogp as $property => $value) {
-            $out->addHeadItem($property,Html::element( 'meta', ['property' => $property, 'content' => $value ] ));
-        }
-
-        //Add Twitter
-        foreach ($twitter as $property => $value) {
-            $out->addMeta($property,$value);
-        }
-
         return true;
 	}
 
