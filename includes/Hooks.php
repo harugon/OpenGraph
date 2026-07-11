@@ -33,7 +33,7 @@ class Hooks implements BeforePageDisplayHook {
 	 * @param Skin $skin
 	 * @return void
 	 */
-	public function onBeforePageDisplay( OutputPage $out, Skin $skin ): void {
+	public function onBeforePageDisplay( $out, $skin ): void {
 		$Sitename = $this->config->get( 'Sitename' );
 		// Twitterアカウント
 		$TwitterSite = $this->config->get( 'OpenGraphTwitterSite' );
