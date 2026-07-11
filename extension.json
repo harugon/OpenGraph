@@ -9,7 +9,7 @@
   "license-name": "MIT",
   "type": "other",
   "requires": {
-    "MediaWiki": ">= 1.35.0",
+    "MediaWiki": ">= 1.46.0",
     "extensions": {
       "TextExtracts": "*",
       "PageImages": "*"
@@ -23,8 +23,16 @@
   "AutoloadClasses": {
     "MediaWiki\\Extension\\OpenGraph\\Hooks": "includes/Hooks.php"
   },
+  "HookHandlers": {
+    "OpenGraphHooks": {
+      "class": "MediaWiki\\Extension\\OpenGraph\\Hooks",
+      "services": [
+        "MainConfig"
+      ]
+    }
+  },
   "Hooks": {
-    "BeforePageDisplay": "MediaWiki\\Extension\\OpenGraph\\Hooks::onBeforePageDisplay"
+    "BeforePageDisplay": "OpenGraphHooks"
   },
   "ConfigRegistry": {
     "opengraph": "GlobalVarConfig::newInstance"

@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: [ '8.2', '8.3' ]
+        mediawiki: [ 'REL1_46', 'master' ]
+
+    steps:
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: sqlite3, pdo_sqlite, gd, intl
+          tools: composer
+
+      - name: Setup MediaWiki
+        uses: lucaswerkmeister/setup-mediawiki@v1
+        id: setup-mediawiki
+        with:
+          version: ${{ matrix.mediawiki }}
+          extensions: |
+            TextExtracts
+            PageImages
+
+      - name: Checkout Extension
+        uses: actions/checkout@v4
+        with:
+          path: ${{ steps.setup-mediawiki.outputs.install-directory }}/extensions/OpenGraph
+
+      - name: Register Extension
+        run: |
+          cd -- "${{ steps.setup-mediawiki.outputs.install-directory }}"
+          echo "wfLoadExtension( 'OpenGraph' );" >> LocalSettings.php
+          php maintenance/run.php update --quick
+
+      - name: Run PHPUnit Tests
+        run: |
+          cd -- "${{ steps.setup-mediawiki.outputs.install-directory }}"
+          composer phpunit -- extensions/OpenGraph/tests/phpunit
