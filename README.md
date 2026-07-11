@@ -1,5 +1,5 @@
 # OpenGraph
-![MediawikiにOpenGraph](https://github.com/harugon/OpenGraph/blob/main/.gituhb/screenshot/opengraph.png?raw=true "OpenGraph")
+![MediawikiにOpenGraph](https://github.com/harugon/OpenGraph/blob/main/.github/screenshot/opengraph.png?raw=true "OpenGraph")
 
 MediawikiにOpenGraph,Twitter　Cardを追加します
 
