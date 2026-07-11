@@ -12,14 +12,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: [ '8.2', '8.3' ]
         mediawiki: [ 'REL1_46', 'master' ]
 
     steps:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php }}
+          php-version: '8.3'
           extensions: sqlite3, pdo_sqlite, gd, intl
           tools: composer
 
@@ -28,18 +27,31 @@ jobs:
         id: setup-mediawiki
         with:
           version: ${{ matrix.mediawiki }}
-          extensions: |
-            TextExtracts
-            PageImages
+
+      - name: Checkout TextExtracts
+        uses: actions/checkout@v4
+        with:
+          repository: wikimedia/mediawiki-extensions-TextExtracts
+          ref: ${{ matrix.mediawiki }}
+          path: ${{ steps.setup-mediawiki.outputs.install-directory }}/extensions/TextExtracts
+
+      - name: Checkout PageImages
+        uses: actions/checkout@v4
+        with:
+          repository: wikimedia/mediawiki-extensions-PageImages
+          ref: ${{ matrix.mediawiki }}
+          path: ${{ steps.setup-mediawiki.outputs.install-directory }}/extensions/PageImages
 
       - name: Checkout Extension
         uses: actions/checkout@v4
         with:
           path: ${{ steps.setup-mediawiki.outputs.install-directory }}/extensions/OpenGraph
 
-      - name: Register Extension
+      - name: Register Extensions
         run: |
           cd -- "${{ steps.setup-mediawiki.outputs.install-directory }}"
+          echo "wfLoadExtension( 'TextExtracts' );" >> LocalSettings.php
+          echo "wfLoadExtension( 'PageImages' );" >> LocalSettings.php
           echo "wfLoadExtension( 'OpenGraph' );" >> LocalSettings.php
           php maintenance/run.php update --quick
 
