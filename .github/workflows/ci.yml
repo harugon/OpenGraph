@@ -22,40 +22,51 @@ jobs:
           extensions: sqlite3, pdo_sqlite, gd, intl
           tools: composer
 
-      - name: Setup MediaWiki
-        uses: lucaswerkmeister/setup-mediawiki@v1
-        id: setup-mediawiki
+      - name: Checkout MediaWiki Core
+        uses: actions/checkout@v4
         with:
-          version: ${{ matrix.mediawiki }}
+          repository: wikimedia/mediawiki
+          ref: ${{ matrix.mediawiki }}
+          path: mediawiki
 
       - name: Checkout TextExtracts
         uses: actions/checkout@v4
         with:
           repository: wikimedia/mediawiki-extensions-TextExtracts
           ref: ${{ matrix.mediawiki }}
-          path: ${{ steps.setup-mediawiki.outputs.install-directory }}/extensions/TextExtracts
+          path: mediawiki/extensions/TextExtracts
 
       - name: Checkout PageImages
         uses: actions/checkout@v4
         with:
           repository: wikimedia/mediawiki-extensions-PageImages
           ref: ${{ matrix.mediawiki }}
-          path: ${{ steps.setup-mediawiki.outputs.install-directory }}/extensions/PageImages
+          path: mediawiki/extensions/PageImages
 
-      - name: Checkout Extension
+      - name: Checkout OpenGraph
         uses: actions/checkout@v4
         with:
-          path: ${{ steps.setup-mediawiki.outputs.install-directory }}/extensions/OpenGraph
+          path: mediawiki/extensions/OpenGraph
+
+      - name: Install Dependencies
+        run: |
+          cd mediawiki
+          composer install --no-interaction
+
+      - name: Install MediaWiki (SQLite)
+        run: |
+          cd mediawiki
+          mkdir data
+          php maintenance/run.php install --dbtype=sqlite --dbpath=data --pass=adminpassword "TestWiki" "admin"
 
       - name: Register Extensions
         run: |
-          cd -- "${{ steps.setup-mediawiki.outputs.install-directory }}"
+          cd mediawiki
           echo "wfLoadExtension( 'TextExtracts' );" >> LocalSettings.php
           echo "wfLoadExtension( 'PageImages' );" >> LocalSettings.php
           echo "wfLoadExtension( 'OpenGraph' );" >> LocalSettings.php
-          php maintenance/run.php update --quick
 
       - name: Run PHPUnit Tests
         run: |
-          cd -- "${{ steps.setup-mediawiki.outputs.install-directory }}"
+          cd mediawiki
           composer phpunit -- extensions/OpenGraph/tests/phpunit
